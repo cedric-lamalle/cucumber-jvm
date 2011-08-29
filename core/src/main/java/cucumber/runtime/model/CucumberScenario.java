@@ -33,7 +33,7 @@ public class CucumberScenario {
     }
 
     public List<Step> getSteps() {
-        return steps;
+        return this.steps;
     }
 
     public void prepare(Runtime runtime) {
@@ -47,14 +47,18 @@ public class CucumberScenario {
 
     public void run(Runtime runtime, Formatter formatter, Reporter reporter) {
         prepare(runtime);
-        formatter.scenario(scenario);        
-        for (Step step : steps) {
+        doFormat(formatter);       
+        for (Step step : getSteps()) {
             formatter.step(step);
         }
-        for (Step step : steps) {
+        for (Step step : getSteps()) {
             runStep(step, reporter);
         }        
         dispose();
+    }
+
+    protected void doFormat(Formatter formatter) {
+        formatter.scenario(scenario);
     }
 
     public void runStep(Step step, Reporter reporter) {
@@ -62,7 +66,7 @@ public class CucumberScenario {
     }
 
     public void step(Step step) {
-        steps.add(step);
+        this.steps.add(step);
     }
 
     private Set<String> tags() {
@@ -74,5 +78,9 @@ public class CucumberScenario {
             tags.add(tag.getName());
         }
         return tags;
+    }
+
+    public CucumberFeature getCucumberFeature() {
+        return this.cucumberFeature;
     }
 }

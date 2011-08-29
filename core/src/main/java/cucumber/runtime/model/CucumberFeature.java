@@ -4,8 +4,10 @@ import cucumber.runtime.Runtime;
 import gherkin.formatter.Formatter;
 import gherkin.formatter.Reporter;
 import gherkin.formatter.model.Background;
+import gherkin.formatter.model.Examples;
 import gherkin.formatter.model.Feature;
 import gherkin.formatter.model.Scenario;
+import gherkin.formatter.model.ScenarioOutline;
 import gherkin.formatter.model.Step;
 
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ public class CucumberFeature {
     private final Feature feature;
     private Background background;
     private CucumberScenario currentCucumberScenario;
+    private CucumberScenarioOutline currentCucumberScenarioOutline;
     private List<CucumberScenario> cucumberScenarios = new ArrayList<CucumberScenario>();
     private Locale locale;
 
@@ -60,5 +63,15 @@ public class CucumberFeature {
 
     public Locale getLocale() {
         return locale;
+    }
+
+    public void scenarioOutline(ScenarioOutline scenarioOutline) {
+        this.currentCucumberScenarioOutline = new CucumberScenarioOutline(this, this.featureUri, scenarioOutline);
+        this.currentCucumberScenario = this.currentCucumberScenarioOutline;
+        cucumberScenarios.add(this.currentCucumberScenarioOutline);
+    }
+
+    public void examples(Examples examples) {
+        this.currentCucumberScenarioOutline.examples(examples);
     }
 }
