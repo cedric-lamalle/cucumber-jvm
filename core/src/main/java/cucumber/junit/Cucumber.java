@@ -117,13 +117,14 @@ public class Cucumber extends ParentRunner<ScenarioRunner> {
 
     private void buildScenarioRunners(CucumberFeature cucumberFeature) {
         for (CucumberScenario cucumberScenario : cucumberFeature.getCucumberScenarios()) {
-            try {
-                scenarioRunners.add(new ScenarioRunner(runtime, cucumberScenario));
-            } catch (InitializationError e) {
-                throw new RuntimeException("Failed to create scenario runner", e);
+            for (CucumberScenario cucumberScenarioToRun : cucumberScenario.getScenariosToRun()) {
+                try {
+                    scenarioRunners.add(new ScenarioRunner(runtime, cucumberScenarioToRun));
+                } catch (InitializationError e) {
+                    throw new RuntimeException("Failed to create scenario runner", e);
+                }
             }
         }
-        
     }
 
     private Long[] toLong(long[] plongs) {

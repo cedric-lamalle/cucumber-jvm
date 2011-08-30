@@ -6,6 +6,7 @@ import gherkin.formatter.model.Scenario;
 import gherkin.formatter.model.Step;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,15 +47,17 @@ public class CucumberScenario {
     }
 
     public void run(Runtime runtime, Formatter formatter, Reporter reporter) {
-        prepare(runtime);
-        doFormat(formatter);       
-        for (Step step : getSteps()) {
-            formatter.step(step);
+        for (CucumberScenario cucumberScenario : getScenariosToRun()) {
+            prepare(runtime);
+            doFormat(formatter);
+            for (Step step : cucumberScenario.getSteps()) {
+                formatter.step(step);
+            }
+            for (Step step : cucumberScenario.getSteps()) {
+                runStep(step, reporter);
+            }
+            dispose();
         }
-        for (Step step : getSteps()) {
-            runStep(step, reporter);
-        }        
-        dispose();
     }
 
     protected void doFormat(Formatter formatter) {
@@ -82,5 +85,13 @@ public class CucumberScenario {
 
     public CucumberFeature getCucumberFeature() {
         return this.cucumberFeature;
+    }
+    
+    public List<CucumberScenario> getScenariosToRun() {
+        return Arrays.asList(this);
+    }
+
+    public String getUri() {
+        return this.uri;
     }
 }

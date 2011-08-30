@@ -17,6 +17,7 @@ public class CucumberScenarioOutline extends CucumberScenario {
     private final List<Examples> examples =  new ArrayList<Examples>();
     private final ScenarioOutlineStepSubstitutor substitutor = new ScenarioOutlineStepSubstitutor();
     private ScenarioOutline scenarioOutline;
+    private final List<CucumberScenario> scenariosToRun = new ArrayList<CucumberScenario>();
     
     public CucumberScenarioOutline(CucumberFeature cucumberFeature, String uri, ScenarioOutline scenarioOutline) {
         super(cucumberFeature, uri, toScenario(scenarioOutline));
@@ -39,31 +40,34 @@ public class CucumberScenarioOutline extends CucumberScenario {
     
     public void examples(Examples examples) {
         this.examples.add(examples);
+        for(List<Step> steps: getSubstitutedStepsFromExamples(examples)) {
+            CucumberScenario cucumberScenario = new CucumberScenario(getCucumberFeature(), getUri(), toScenario(this.scenarioOutline));
+            for(Step step: steps) {
+                cucumberScenario.step(step);
+            }
+            this.scenariosToRun.add(cucumberScenario);
+        }
     }
 
 
-    private List<Step> getSubstitutedStepsFromExample(Examples example) {
-        Table table = new Table(example.getRows(), getCucumberFeature().getLocale());
-        List<Step> originalSteps = super.getSteps();
-        List<Step> substitutedSteps = new ArrayList<Step>();
+    private List<List<Step>> getSubstitutedStepsFromExamples(Examples examples) {
+        Table table = new Table(examples.getRows(), getCucumberFeature().getLocale());
+        List<Step> originalSteps = getSteps();
+        List<List<Step>> substitutedSteps = new ArrayList<List<Step>>();
         for(Map<String, Object> exampleLine: table.hashes()) {
-            substitutedSteps.addAll(this.substitutor.getSubstitutedSteps(originalSteps, exampleLine));
+            substitutedSteps.add(this.substitutor.getSubstitutedSteps(originalSteps, exampleLine));
         }
         return substitutedSteps;
     }
     
     @Override
-    public List<Step> getSteps() {
-        List<Step> steps = new ArrayList<Step>();
-        for (Examples example : this.examples) {
-            steps.addAll(getSubstitutedStepsFromExample(example));
-        }
-        return steps;
+    protected void doFormat(Formatter formatter) {
+        formatter.scenarioOutline(this.scenarioOutline);
     }
     
     @Override
-    protected void doFormat(Formatter formatter) {
-        formatter.scenarioOutline(this.scenarioOutline);
+    public List<CucumberScenario> getScenariosToRun() {
+        return this.scenariosToRun;
     }
     
 }
