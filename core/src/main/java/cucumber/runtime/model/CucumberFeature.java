@@ -17,8 +17,8 @@ import java.util.Locale;
 public class CucumberFeature {
     private final String featureUri;
     private final Feature feature;
-    private Background background;
-    private CucumberScenario currentCucumberScenario;
+    private CucumberBackground background;
+    private StepContainer currentStepContainer;
     private CucumberScenarioOutline currentCucumberScenarioOutline;
     private List<CucumberScenario> cucumberScenarios = new ArrayList<CucumberScenario>();
     private Locale locale;
@@ -29,16 +29,18 @@ public class CucumberFeature {
     }
 
     public void background(Background background) {
-        this.background = background;
+        this.background = new CucumberBackground(background);
+        this.currentStepContainer = this.background;
     }
 
     public void scenario(Scenario scenario) {
-        currentCucumberScenario = new CucumberScenario(this, featureUri, scenario);
-        cucumberScenarios.add(currentCucumberScenario);
+        CucumberScenario newCucumberScenario = new CucumberScenario(this, featureUri, scenario);
+        currentStepContainer = newCucumberScenario;
+        cucumberScenarios.add(newCucumberScenario);
     }
 
     public void step(Step step) {
-        currentCucumberScenario.step(step);
+        currentStepContainer.step(step);
     }
 
     public Feature getFeature() {
@@ -67,11 +69,15 @@ public class CucumberFeature {
 
     public void scenarioOutline(ScenarioOutline scenarioOutline) {
         this.currentCucumberScenarioOutline = new CucumberScenarioOutline(this, this.featureUri, scenarioOutline);
-        this.currentCucumberScenario = this.currentCucumberScenarioOutline;
+        this.currentStepContainer = this.currentCucumberScenarioOutline;
         cucumberScenarios.add(this.currentCucumberScenarioOutline);
     }
 
     public void examples(Examples examples) {
         this.currentCucumberScenarioOutline.examples(examples);
+    }
+
+    public CucumberBackground getBackground() {
+        return this.background;
     }
 }

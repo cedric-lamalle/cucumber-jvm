@@ -15,8 +15,7 @@ import cucumber.runtime.Runtime;
 import cucumber.runtime.World;
 import gherkin.formatter.model.Tag;
 
-public class CucumberScenario {
-    private final List<Step> steps = new ArrayList<Step>();
+public class CucumberScenario extends BaseStepContainer {
     private final Scenario scenario;
     private final CucumberFeature cucumberFeature;
     private final String uri;
@@ -33,10 +32,6 @@ public class CucumberScenario {
         return scenario;
     }
 
-    public List<Step> getSteps() {
-        return this.steps;
-    }
-
     public void prepare(Runtime runtime) {
         world = runtime.newWorld(tags());
         world.prepare();
@@ -47,7 +42,7 @@ public class CucumberScenario {
     }
 
     public void run(Runtime runtime, Formatter formatter, Reporter reporter) {
-        for (CucumberScenario cucumberScenario : getScenariosToRun()) {
+        for (StepContainer cucumberScenario : getScenariosToRun()) {
             prepare(runtime);
             doFormat(formatter);
             for (Step step : cucumberScenario.getSteps()) {
@@ -66,10 +61,6 @@ public class CucumberScenario {
 
     public void runStep(Step step, Reporter reporter) {
         world.runStep(uri, step, reporter, cucumberFeature.getLocale());
-    }
-
-    public void step(Step step) {
-        this.steps.add(step);
     }
 
     private Set<String> tags() {
@@ -93,5 +84,19 @@ public class CucumberScenario {
 
     public String getUri() {
         return this.uri;
+    }
+    
+    @Override
+    public List<Step> getSteps() {
+        List<Step> allSteps;
+        CucumberBackground background = getCucumberFeature().getBackground();
+        if (background != null) {
+            allSteps = new ArrayList<Step>();
+            allSteps.addAll(background.getSteps());
+            allSteps.addAll(super.getSteps());
+        } else {
+            allSteps = super.getSteps();
+        }
+        return allSteps;
     }
 }
