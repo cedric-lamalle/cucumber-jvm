@@ -44,6 +44,7 @@ public class CucumberScenario extends BaseStepContainer {
     public void run(Runtime runtime, Formatter formatter, Reporter reporter) {
         for (StepContainer cucumberScenario : getScenariosToRun()) {
             prepare(runtime);
+            //TODO shouldn't it format once (for scenario outlines)
             doFormat(formatter);
             for (Step step : cucumberScenario.getSteps()) {
                 formatter.step(step);
@@ -78,6 +79,7 @@ public class CucumberScenario extends BaseStepContainer {
         return this.cucumberFeature;
     }
     
+    //TODO could be List<Step> stepsGroups
     public List<CucumberScenario> getScenariosToRun() {
         return Arrays.asList(this);
     }

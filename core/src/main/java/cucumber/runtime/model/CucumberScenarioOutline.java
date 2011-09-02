@@ -38,6 +38,7 @@ public class CucumberScenarioOutline extends CucumberScenario {
         return this.examples;
     }
     
+    //TODO: could return List<CucumberScenario>
     public void examples(Examples examples) {
         this.examples.add(examples);
         for(List<Step> steps: getSubstitutedStepsFromExamples(examples)) {
