@@ -23,12 +23,22 @@ public class TableDiffer {
     }
 
     private void checkColumns(DataTable a, DataTable b) {
+    	checkTablesAreNotEmpty(a, b);
         if (a.topCells().size() != b.topCells().size()) {
             throw new IllegalArgumentException("Tables must have equal number of columns:\n" + a + "\n" + b);
         }
     }
 
-    public void calculateDiffs() {
+	private void checkTablesAreNotEmpty(DataTable a, DataTable b) {
+		if (a.raw().isEmpty()) {
+			throw new TableDiffException("Left (source) table is empty.");
+		}
+		if(b.raw().isEmpty()) {
+			throw new TableDiffException("Right (destination) table is empty.");
+		}
+	}
+
+	public void calculateDiffs() {
         Patch patch = DiffUtils.diff(orig.diffableRows(), other.diffableRows());
         List<Delta> deltas = patch.getDeltas();
         if (!deltas.isEmpty()) {

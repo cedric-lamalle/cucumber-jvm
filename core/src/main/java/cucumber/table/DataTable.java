@@ -6,6 +6,7 @@ import gherkin.formatter.model.Row;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DataTable {
@@ -34,7 +35,7 @@ public class DataTable {
     }
 
     List<String> topCells() {
-        return gherkinRows.get(0).getCells();
+        return gherkinRows.size()>0 ? gherkinRows.get(0).getCells() : Collections.EMPTY_LIST;
     }
 
     List<List<String>> cells(int firstRow) {

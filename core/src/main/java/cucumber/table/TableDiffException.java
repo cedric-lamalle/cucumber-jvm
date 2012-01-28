@@ -4,4 +4,8 @@ public class TableDiffException extends RuntimeException {
     public TableDiffException(DataTable tableDiff) {
         super("Tables were not identical:\n" + tableDiff.toString());
     }
+
+	public TableDiffException(String message) {
+		super(message);
+	}
 }

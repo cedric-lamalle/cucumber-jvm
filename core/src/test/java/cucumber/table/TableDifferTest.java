@@ -3,6 +3,7 @@ package cucumber.table;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -106,7 +107,7 @@ public class TableDifferTest {
                 "| I'm going to work |\n");
 
         List<List<String>> actual = new ArrayList<List<String>>();
-
+;
         actual.add(asList("I just woke up"));
         actual.add(asList("I'm going to work"));
 
@@ -119,5 +120,16 @@ public class TableDifferTest {
             assertEquals(expectedDiff, e.getMessage());
             throw e;
         }
+    }
+    
+    @Test(expected = TableDiffException.class)
+    public void should_throw_exception_when_diffed_with_empty_list() {
+    	List<List<String>> other = Collections.EMPTY_LIST;
+    	table().diff(other);
+    }
+    
+    @Test(expected = TableDiffException.class)
+    public void should_throw_exception_when_source_table_empty() {
+    	TableParser.parse("").diff(Collections.EMPTY_LIST);
     }
 }
